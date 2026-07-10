@@ -4,91 +4,91 @@
 
 ---
 
-## Definición Conceptual del Producto
+## Product Concept Definition
 
 ---
 
-**CapitalQuant** es una plataforma de apoyo a la decisión para analistas financieros y gestores de portafolios que combina modelos de Machine Learning supervisado, explicabilidad mediante SHAP y recuperación aumentada sobre documentos oficiales para priorizar oportunidades de inversión de manera objetiva, transparente y respaldada por evidencia documental.
+**CapitalQuant** is a decision support platform for financial analysts and portfolio managers that combines supervised Machine Learning models, SHAP explainability, and augmented retrieval over official documents to prioritize investment opportunities in an objective, transparent, and evidence-backed manner.
 
 ---
 
-## Contexto y Justificación
+## Context and Rationale
 
-Los profesionales de inversión enfrentan tres desafíos estructurales:
+Investment professionals face three structural challenges:
 
-| Desafío | Descripción |
-|---------|-------------|
-| **Sobrecarga de información** | Miles de empresas, cientos de ratios financieros, docenas de reportes anuales por empresa, más noticias y datos macroeconómicos |
-| **Sesgos cognitivos** | Decisiones influenciadas por ruido del mercado, emociones o sesgos de confirmación |
-| **Falta de trazabilidad** | Dificultad para reconstruir y explicar objetivamente por qué se tomó una decisión de inversión específica |
+| Challenge | Description |
+|-----------|-------------|
+| **Information overload** | Thousands of companies, hundreds of financial ratios, dozens of annual reports per company, plus news and macroeconomic data |
+| **Cognitive biases** | Decisions influenced by market noise, emotions, or confirmation bias |
+| **Lack of traceability** | Difficulty reconstructing and objectively explaining why a specific investment decision was made |
 
-La plataforma aborda estos problemas ofreciendo:
+The platform addresses these problems by offering:
 
-1. **Priorización objetiva** - Basada en patrones históricos aprendidos por el modelo
-2. **Explicaciones transparentes** - Cada recomendación viene acompañada de una descomposición clara de factores
-3. **Evidencia documental** - Las recomendaciones se respaldan con información extraída de documentos oficiales
-
----
-
-## El Problema que Resuelve
-
-Los modelos predictivos proporcionan una estimación cuantitativa, pero rara vez explican suficientemente las razones detrás de una recomendación. La plataforma combina aprendizaje supervisado, explicabilidad y recuperación de evidencia documental para ofrecer decisiones transparentes y auditables, permitiendo que el analista mantenga el control final.
+1. **Objective prioritization** - Based on historical patterns learned by the model
+2. **Transparent explanations** - Each recommendation comes with a clear breakdown of contributing factors
+3. **Documentary evidence** - Recommendations are backed by information extracted from official documents
 
 ---
 
-## Componentes Fundamentales
+## The Problem It Solves
 
-### 1. Motor Predictivo
+Predictive models provide quantitative estimates, but rarely explain the reasoning behind a recommendation. The platform combines supervised learning, explainability, and documentary evidence retrieval to deliver transparent and auditable decisions, allowing the analyst to maintain final control.
 
-El sistema utiliza XGBoost para predecir qué empresas tienen mayor probabilidad de superar al S&P500 en los próximos 252 días hábiles. El modelo se entrena con datos fundamentales y de mercado de los últimos 15 años utilizando validación walk-forward para evitar data leakage y simular condiciones reales de producción.
+---
 
-**Target del modelo:**
+## Core Components
+
+### 1. Predictive Engine
+
+The system uses XGBoost to predict which companies have the highest probability of outperforming the S&P500 over the next 252 trading days. The model is trained on fundamental and market data from the last 15 years using walk-forward validation to prevent data leakage and simulate real production conditions.
+
+**Model Target:**
 ```
-Target = 1 si Return_stock > Return_SP500
-Target = 0 en caso contrario
+Target = 1 if Return_stock > Return_SP500
+Target = 0 otherwise
 ```
 
-### 2. Motor de Explicabilidad
+### 2. Explainability Engine
 
-SHAP analiza cada predicción y descompone el score en contribuciones individuales de cada variable financiera, permitiendo al analista ver exactamente qué factores (ROE, crecimiento de ingresos, margen, etc.) influyeron positiva o negativamente en la recomendación.
+SHAP analyzes each prediction and decomposes the score into individual contributions from each financial variable, allowing the analyst to see exactly which factors (ROE, revenue growth, margin, etc.) positively or negatively influenced the recommendation.
 
-### 3. Motor Documental
+### 3. Document Engine
 
-Un sistema RAG procesa reportes 10-K y 10-Q de la SEC, permitiendo a los analistas preguntar en lenguaje natural sobre los documentos que respaldan una recomendación. El sistema siempre cita las fuentes exactas (sección y página del documento original).
+A RAG system processes SEC 10-K and 10-Q reports, allowing analysts to ask natural language questions about the documents that support a recommendation. The system always cites exact sources (section and page of the original document).
 
-### 4. Capa de Presentación
+### 4. Presentation Layer
 
-Un dashboard interactivo que permite:
-- Visualizar el ranking de empresas con sus scores
-- Explorar explicaciones detalladas de cada recomendación
-- Consultar documentos oficiales mediante lenguaje natural
-
----
-
-## Flujo de Uso Principal
-
-### Escenario: Revisión de Oportunidades de Inversión
-
-Un gestor de portafolio necesita identificar nuevas oportunidades de inversión para el próximo trimestre. Accede al sistema y observa un ranking de 500 empresas ordenadas por su Investment Score. Para entender mejor a los líderes, selecciona una empresa y el sistema le muestra:
-
-1. El score numérico de la empresa
-2. Un desglose SHAP que explica qué factores impulsaron el score (ej. "ROE de 32% contribuyó +25 puntos; P/E de 34x restó -8 puntos")
-3. Un chat documental donde puede preguntar: "¿Qué dice el último 10-K sobre el crecimiento de esta empresa?" y el sistema responde extrayendo la sección relevante del reporte
-
-El gestor ahora tiene una priorización objetiva, una explicación clara de cada oportunidad y acceso directo a la evidencia documental, lo que le permite tomar decisiones más informadas y defendibles.
+An interactive dashboard that enables:
+- Viewing company rankings with their scores
+- Exploring detailed explanations for each recommendation
+- Querying official documents via natural language
 
 ---
 
-## Evaluación del Sistema
+## Main Usage Flow
 
-### Evaluación del Modelo
+### Scenario: Investment Opportunity Review
+
+A portfolio manager needs to identify new investment opportunities for the next quarter. They access the system and view a ranking of 500 companies ordered by Investment Score. To better understand the leaders, they select a company and the system displays:
+
+1. The company's numerical score
+2. A SHAP breakdown explaining what factors drove the score (e.g., "ROE of 32% contributed +25 points; P/E of 34x subtracted -8 points")
+3. A document chat where they can ask: "What does the latest 10-K say about this company's growth?" and the system responds by extracting the relevant section from the report
+
+The manager now has objective prioritization, a clear explanation of each opportunity, and direct access to documentary evidence, enabling more informed and defensible decisions.
+
+---
+
+## System Evaluation
+
+### Model Evaluation
 - Walk-forward validation (2010-2024)
 - ROC AUC, Precision, Recall, Accuracy
 - Calibration Curve
 - Confusion Matrix
-- SHAP Global y Local
+- Global and Local SHAP
 
-### Evaluación del RAG
+### RAG Evaluation
 - Precision@5
 - Recall@5
 - Faithfulness
@@ -96,68 +96,68 @@ El gestor ahora tiene una priorización objetiva, una explicación clara de cada
 
 ---
 
-## Limitaciones
+## Limitations
 
-- No ejecuta órdenes de compra
-- No constituye asesoría financiera
-- No incorpora noticias en tiempo real
-- Se basa en información pública disponible
-- Está diseñado para apoyar el análisis, no reemplazar al analista
-
----
-
-## Valor para el Usuario
-
-| Beneficio | Descripción |
-|-----------|-------------|
-| **Objetividad** | Las recomendaciones se basan en datos y patrones históricos, no en intuición o sesgos |
-| **Transparencia** | Cada recomendación es explicable y desglosable en factores individuales |
-| **Eficiencia** | Reduce el tiempo necesario para filtrar y evaluar oportunidades |
-| **Trazabilidad** | Cada decisión puede respaldarse con evidencia documental |
-| **Auditabilidad** | El sistema permite reconstruir por qué se hizo cada recomendación |
+- Does not execute buy/sell orders
+- Does not constitute financial advice
+- Does not incorporate real-time news
+- Relies on publicly available information
+- Designed to support analysis, not replace the analyst
 
 ---
 
-## Posicionamiento
+## User Value
 
-La plataforma no pretende reemplazar el juicio del analista, sino **amplificar su capacidad de análisis** proporcionando una capa de inteligencia objetiva y explicable sobre la cual tomar decisiones informadas.
-
----
-
-## Diferenciadores
-
-| Característica | Beneficio |
-|----------------|-----------|
-| **Explicabilidad como característica principal** | SHAP no es un extra, es parte del valor fundamental del producto |
-| **Evidencia documental integrada** | Las recomendaciones se respaldan con documentos oficiales, no solo con opiniones |
-| **Arquitectura de producto** | Diseñado como software empresarial, no como un notebook de investigación |
-| **Validación walk-forward** | El modelo se evalúa en condiciones realistas que simulan producción |
+| Benefit | Description |
+|---------|-------------|
+| **Objectivity** | Recommendations based on data and historical patterns, not intuition or bias |
+| **Transparency** | Each recommendation is explainable and broken down into individual factors |
+| **Efficiency** | Reduces time needed to filter and evaluate opportunities |
+| **Traceability** | Every decision can be backed by documentary evidence |
+| **Auditability** | The system allows reconstruction of why each recommendation was made |
 
 ---
 
-## Roadmap Técnico
+## Positioning
 
-| Fase | Resultado |
-|------|-----------|
-| 1 | ETL desde Yahoo Finance, FRED y SEC EDGAR |
-| 2 | Pipeline de features y dataset reproducible |
-| 3 | Modelo XGBoost con validación walk-forward |
-| 4 | SHAP global y local |
-| 5 | API FastAPI para predicciones y explicaciones |
-| 6 | Ingesta de 10-K, embeddings y RAG |
-| 7 | Dashboard React |
-| 8 | Docker, README y demo |
+The platform does not aim to replace the analyst's judgment, but rather to **amplify their analytical capability** by providing an objective and explainable intelligence layer upon which to make informed decisions.
 
 ---
 
-## Tecnologías Clave
+## Differentiators
 
-| Área | Tecnología |
+| Feature | Benefit |
+|---------|---------|
+| **Explainability as a core feature** | SHAP is not an add-on; it's fundamental to the product's value |
+| **Integrated documentary evidence** | Recommendations backed by official documents, not just opinions |
+| **Product architecture** | Designed as enterprise software, not a research notebook |
+| **Walk-forward validation** | Model evaluated under realistic production-like conditions |
+
+---
+
+## Technical Roadmap
+
+| Phase | Deliverable |
+|-------|-------------|
+| 1 | ETL from Yahoo Finance, FRED, and SEC EDGAR |
+| 2 | Feature pipeline and reproducible dataset |
+| 3 | XGBoost model with walk-forward validation |
+| 4 | Global and local SHAP |
+| 5 | FastAPI for predictions and explanations |
+| 6 | 10-K ingestion, embeddings, and RAG |
+| 7 | React Dashboard |
+| 8 | Docker, README, and demo |
+
+---
+
+## Key Technologies
+
+| Area | Technology |
 |------|------------|
 | Machine Learning | XGBoost, scikit-learn |
-| Explicabilidad | SHAP |
-| Document Intelligence | RAG con LangChain, ChromaDB |
+| Explainability | SHAP |
+| Document Intelligence | RAG with LangChain, ChromaDB |
 | Backend | FastAPI, Python |
 | Frontend | React, TypeScript |
-| Containerización | Docker |
+| Containerization | Docker |
 | MLOps | MLflow |
