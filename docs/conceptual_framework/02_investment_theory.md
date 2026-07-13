@@ -103,14 +103,3 @@ Richard Thaler's "nudge" theory suggests that small changes in choice architectu
 | Maintain human judgment | Analyst retains final control—AI supports, doesn't replace |
 
 ---
-# Ver el estado actual
-git status
-
-# Añadir todos los archivos nuevos (incluyendo docs/conceptual_framework/)
-git add .
-
-# Hacer el commit con mensaje
-git commit -m "update"
-
-# Subir a GitHub
-git push origin master
