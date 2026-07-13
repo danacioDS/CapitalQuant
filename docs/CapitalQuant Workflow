@@ -1,0 +1,191 @@
+CapitalQuant Development Methodology
+Complete Workflow
+Your methodology flows from why (conceptual) → what (design) → how (implementation) in six distinct phases.
+________________________________________
+Phase 0: Conceptual Foundation
+Purpose: Establish the investment thesis, product vision, business rationale, and strategic positioning before any design or implementation.
+Documents (already complete):
+#	Document	Question It Answers
+01	Product Concept	Why does this platform need to exist? What problem does it solve?
+02	Business Context	Why is explainable investment intelligence necessary?
+03	Machine Learning Strategy	Why XGBoost? Why supervised learning?
+04	Explainability Strategy	Why SHAP? How will predictions be interpreted?
+05	Document Intelligence Strategy	Why RAG? Why SEC filings?
+06	Technical Roadmap	How will the platform be built incrementally?
+Gate condition: Product concept reviewed and approved.
+Output: Confidence that the product vision is technically and commercially sound before engineering begins.
+________________________________________
+Phase 1: High-Level Design (HLD)
+Purpose: Translate the product concept into a complete software architecture. Define layers, services, data flows, and technology choices without implementation details.
+Documents:
+•	docs/hld/system_architecture.md
+•	docs/hld/product_architecture.md
+•	docs/hld/dashboard_design.md
+Key decisions made here:
+•	Modular AI architecture
+•	ETL pipeline
+•	Predictive engine
+•	Explainability engine
+•	Document Intelligence (RAG)
+•	FastAPI backend
+•	React dashboard
+•	MLflow experiment tracking
+Gate condition: Architecture reviewed, dependencies identified, technology stack approved.
+Output: Complete system architecture with clearly defined components.
+________________________________________
+Phase 2: Low-Level Design (LLD)
+Purpose: Define the implementation details of every module, including APIs, schemas, pipelines, models, and interfaces.
+Documents (one per component):
+•	docs/lld/etl_pipeline.md
+•	docs/lld/feature_engineering.md
+•	docs/lld/xgboost_model.md
+•	docs/lld/shap_engine.md
+•	docs/lld/rag_pipeline.md
+•	docs/lld/api_design.md
+•	docs/lld/dashboard.md
+Each LLD includes:
+•	Function signatures
+•	Expected inputs and outputs
+•	Data schemas
+•	Error handling
+•	API contracts
+•	Testing requirements
+•	Dependencies
+Gate condition: All implementation details reviewed and unambiguous.
+Output: Technical specifications that can be implemented without additional design decisions.
+________________________________________
+Phase 3: Production Specification
+Purpose: Produce a single master specification that consolidates the HLD and LLD into one executable reference document.
+Document:
+docs/specs/capitalquant_production_spec.md
+What it contains:
+•	Executive summary
+•	Overall architecture
+•	Complete data flow
+•	Layer-by-layer specifications
+•	Technology stack
+•	Acceptance criteria
+•	Success metrics
+Why this exists: The production specification becomes the single source of truth and prevents inconsistencies between design documents.
+Gate condition: Specification frozen before implementation begins.
+Output: Unified implementation contract.
+________________________________________
+Phase 4: Prompt Generation
+Purpose: Transform the production specification into implementation prompts for each independent module.
+Documents:
+docs/prompts/prompt_01.md
+docs/prompts/prompt_02.md
+...
+Prompt structure:
+Section	Content
+Overview	Purpose of the module
+Inputs	Expected data and interfaces
+Outputs	Return values and artifacts
+Error Handling	Failure scenarios
+API	Interface specification
+Tests	Validation criteria
+Example	Expected behavior
+Gate condition: Prompts reviewed and ready for implementation.
+Output: Self-contained implementation prompts.
+________________________________________
+Phase 5: Implementation
+Purpose: Build the platform incrementally following the production specification.
+Implementation order:
+1.	ETL Pipeline
+2.	Feature Engineering
+3.	XGBoost Model
+4.	SHAP Explainability
+5.	FastAPI Backend
+6.	RAG Pipeline
+7.	React Dashboard
+8.	Docker & Deployment
+Process for each module:
+1.	Execute implementation prompt
+2.	Develop module
+3.	Run tests
+4.	Commit changes
+5.	Continue to the next module
+Gate condition: Tests pass and integration succeeds.
+Output: Working production-ready software.
+________________________________________
+Phase 6: Validation
+Purpose: Verify that every component satisfies the functional and quantitative objectives defined during the conceptual phase.
+Validation activities:
+Predictive Model
+•	Walk-forward validation
+•	ROC AUC
+•	Precision
+•	Recall
+•	Accuracy
+•	Calibration Curve
+•	Confusion Matrix
+•	Global SHAP
+•	Local SHAP
+RAG System
+•	Precision@5
+•	Recall@5
+•	Faithfulness
+•	Context Precision
+Product Validation
+•	Dashboard functionality
+•	API integration
+•	Explainability verification
+•	Document retrieval verification
+Gate condition: All validation metrics satisfy project requirements.
+Output: Validation report and production-ready platform.
+________________________________________
+Complete Workflow Diagram
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         PHASE 0: CONCEPTUAL FOUNDATION                       │
+│ Product Concept → Business Context → ML Strategy → SHAP → RAG → Roadmap     │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        PHASE 1: HIGH-LEVEL DESIGN                            │
+│     System Architecture → Product Architecture → Dashboard Design           │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         PHASE 2: LOW-LEVEL DESIGN                            │
+│ ETL → Features → XGBoost → SHAP → API → RAG → Dashboard                     │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                      PHASE 3: PRODUCTION SPECIFICATION                       │
+│                capitalquant_production_spec.md (FROZEN)                      │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         PHASE 4: PROMPT GENERATION                           │
+│                 prompt_01 → prompt_02 → prompt_03 → ...                     │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                          PHASE 5: IMPLEMENTATION                             │
+│ ETL → Features → Model → SHAP → API → RAG → Dashboard → Deployment          │
+└──────────────────────────────────────┬───────────────────────────────────────┘
+                                       ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                           PHASE 6: VALIDATION                               │
+│ Walk-forward → SHAP → RAG → Dashboard → Acceptance Tests → Report           │
+└──────────────────────────────────────────────────────────────────────────────┘
+________________________________________
+Current Status
+Phase	Status
+Phase 0: Conceptual	✅ Complete
+Phase 1: HLD	⏳ Planned
+Phase 2: LLD	⏳ Planned
+Phase 3: Production Specification	⏳ Planned
+Phase 4: Prompt Generation	⏳ Planned
+Phase 5: Implementation	⏳ Planned
+Phase 6: Validation	⏳ Planned
+________________________________________
+Next Steps
+1.	Complete the High-Level Design.
+2.	Produce the Low-Level Design documents.
+3.	Consolidate the Production Specification.
+4.	Generate implementation prompts.
+5.	Implement each module incrementally.
+6.	Validate the predictive model, explainability engine, RAG pipeline, and dashboard.
+7.	Deploy the production-ready platform.
+
