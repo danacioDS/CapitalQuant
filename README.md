@@ -1,1 +1,1 @@
-# CapitalQuant
+# CapitalMind
