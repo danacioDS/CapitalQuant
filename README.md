@@ -20,3 +20,6 @@ git push origin master
 
 # 7. Verificar que todo está sincronizado
 git status
+git add .
+git commit -m "update"
+git push origin mater

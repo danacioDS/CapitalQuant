@@ -134,15 +134,21 @@ Window N: Train [2018-2022] → Test [2023]
 
 ### Parameters
 
-- **Training window:** 252 days × 4 years = ~1,008 trading days
+- **Training window:** ~1,008 trading days (4 years)
+- **Prediction horizon:** 252 trading days (1 year)
 - **Testing window:** 21 trading days (1 month)
 - **Stride:** 21 trading days (monthly rebalancing)
 
-### Why 252/21?
+### Why These Parameters?
 
-- **252 days (1 year):** Provides enough data for robust training
-- **21 days (1 month):** Simulates monthly rebalancing cycle
-- **Monthly stride:** Matches typical portfolio management frequency
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| **Training window** | 4 years | Provides enough data for robust training |
+| **Prediction horizon** | 252 days | The target definition |
+| **Testing window** | 21 days (1 month) | Simulates monthly rebalancing cycle |
+| **Stride** | 21 days | Matches typical portfolio management frequency |
+
+**Important distinction:** The prediction horizon (252 days) and the training window (4 years) are separate concepts. The model predicts 252 days ahead, but is trained on 4 years of historical data to learn patterns.
 
 ---
 
@@ -162,12 +168,12 @@ Window N: Train [2018-2022] → Test [2023]
 
 The ROC curve measures the model's ability to **rank** companies correctly—which is exactly what investors need: a list of opportunities ordered by probability of outperformance.
 
-```
-AUC = 0.5 → Random (useless)
-AUC = 0.7 → Good
-AUC = 0.8 → Excellent
-AUC = 0.9 → Outstanding
-```
+**In general ML contexts:**
+- AUC = 0.7 → Good
+- AUC = 0.8 → Excellent
+- AUC = 0.9 → Outstanding
+
+**In financial prediction:** Due to the inherent noise in markets, AUC values above 0.55 are considered practically meaningful.
 
 ### Calibration
 
@@ -177,7 +183,14 @@ Probability outputs must be **well-calibrated**:
 P(prediction) ≈ Actual frequency
 ```
 
-**Calibration Curve:** Groups predictions into bins (e.g., 0-10%, 10-20%, ...) and compares mean predicted probability to actual outcome rate.
+**Calibration metrics:**
+- **Brier Score:** Mean squared error of predicted probabilities (lower is better)
+- **Expected Calibration Error (ECE):** Average difference between predicted and observed frequencies
+- **Reliability Diagram:** Visual comparison of predicted vs. actual probabilities across bins
+
+**Calibration methods (if needed):**
+- **Platt Scaling:** Parametric calibration using logistic regression
+- **Isotonic Regression:** Non-parametric calibration, more flexible but requires more data
 
 ---
 
@@ -233,9 +246,11 @@ Score = Baseline + ROE_contribution + Revenue_contribution + ... + P/E_contribut
 
 | Test | What It Tests | Pass Criteria |
 |------|---------------|---------------|
-| **Calibration Brier Score** | Probability calibration | < 0.25 |
-| **Hosmer-Lemeshow** | Goodness of fit | p > 0.05 |
-| **Kolmogorov-Smirnov** | Distribution of predictions vs. actuals | p > 0.05 |
+| **Brier Score** | Probability calibration | < 0.25 |
+| **Expected Calibration Error** | Calibration quality | < 0.05 |
+| **Reliability Diagram** | Visual calibration assessment | Monotonic curve |
+
+**Note:** The Kolmogorov-Smirnov test is primarily used for comparing feature distributions (drift detection) or measuring class separation in credit scoring contexts. It is not used as a model validation test for binary classification.
 
 ### Stability Tests
 
@@ -243,6 +258,7 @@ Score = Baseline + ROE_contribution + Revenue_contribution + ... + P/E_contribut
 |------|---------------|---------------|
 | **SHAP Stability** | Feature importance consistent across windows | Correlation > 0.8 |
 | **AUC Stability** | Performance consistent across time | Std dev < 0.05 |
+| **Feature Distribution KS** | Feature drift detection | p > 0.05 (monitoring) |
 
 ---
 
@@ -261,14 +277,15 @@ Score = Baseline + ROE_contribution + Revenue_contribution + ... + P/E_contribut
 
 XGBoost hyperparameters to prevent overfitting:
 
-| Parameter | Effect |
-|-----------|--------|
-| `max_depth` | Limits tree complexity (3-6 recommended) |
-| `learning_rate` | Slows learning (0.01-0.1) |
-| `subsample` | Uses random subset of data per tree (0.7-0.9) |
-| `colsample_bytree` | Uses random subset of features per tree (0.7-0.9) |
-| `reg_alpha` | L1 regularization (0-1) |
-| `reg_lambda` | L2 regularization (1-5) |
+| Parameter | Effect | Recommended Value |
+|-----------|--------|-------------------|
+| `max_depth` | Limits tree complexity | 3-6 |
+| `learning_rate` | Slows learning | 0.01-0.1 |
+| `subsample` | Uses random subset of data per tree | 0.7-0.9 |
+| `colsample_bytree` | Uses random subset of features per tree | 0.7-0.9 |
+| `reg_alpha` | L1 regularization | 0-1 |
+| `reg_lambda` | L2 regularization | 1-5 |
+| `min_child_weight` | Minimum sum of instance weight needed in a child | 1-5 |
 
 ---
 
@@ -276,18 +293,14 @@ XGBoost hyperparameters to prevent overfitting:
 
 ### Data Requirements
 
-- **Companies:** 500 (S&P 500) × 15 years × 252 days = ~1.9M observations
-- **Features:** ~50 per observation
-- **Training window:** 1 year × 500 companies = 126,000 observations
-- **Test window:** 1 month × 500 companies = 10,500 observations
+- **Companies:** 500 (S&P 500)
+- **Time period:** 15 years of daily data
+- **Training samples:** ~126,000 (1 year × 500 companies at monthly frequency)
+- **Test samples:** ~10,500 (1 month × 500 companies)
 
-### Minimum Observations per Feature
+### Important Note on Independence
 
-Rule of thumb: **10-30 observations per feature**
-
-```
-126,000 / 50 = 2,520 observations per feature → Excellent
-```
+Financial data samples are **not independent**. Observations overlap in time (rolling windows) and are correlated across companies (market factors). Walk-forward validation accounts for time dependency, and feature engineering should account for cross-sectional dependencies.
 
 ---
 
@@ -297,9 +310,49 @@ Rule of thumb: **10-30 observations per feature**
 |-------|------|------|---------|
 | **Logistic Regression** | Interpretable | Linear only | ❌ Too simplistic |
 | **Random Forest** | Good ensemble | Harder to tune | ⚠️ Less accurate than XGBoost |
-| **Neural Network** | Highly flexible | Black box, data hungry | ❌ Not explainable |
+| **Neural Network** | Highly flexible | More computationally expensive; typically requires larger datasets for stable generalization in tabular financial data | ❌ Overkill for this problem |
 | **XGBoost** | Accurate, interpretable, fast | Requires tuning | ✅ Winner |
-| **LSTM** | Handles sequences | Overkill, not interpretable | ❌ Not necessary |
+| **LSTM** | Handles sequences | Overkill, not necessary for this problem | ❌ Not required |
+
+---
+
+## Realistic Performance Expectations
+
+### Financial Markets are Noisy
+
+In quantitative finance, financial markets are highly stochastic. An AUC of **0.53 to 0.55** is often considered practically meaningful for directional stock prediction using public features.
+
+**What this means for CapitalQuant:**
+- The system prioritizes **robust MLOps, relative ranking, and explainability** over absolute alpha generation
+- Minimum performance thresholds are **dynamically set** based on the baseline model's historical performance
+- Success is measured by **consistent ranking ability** rather than absolute predictive accuracy
+
+### Threshold Summary
+
+| Metric | Realistic Target | Notes |
+|--------|------------------|-------|
+| **AUC-ROC** | > 0.55 | Practically meaningful in financial context |
+| **Precision** | > 0.55 | Better than random baseline of 0.50 |
+| **Recall** | > 0.50 | Balanced approach |
+| **Brier Score** | < 0.25 | Well-calibrated probabilities |
+| **SHAP Stability** | Correlation > 0.80 | Consistent explanations across time |
+| **AUC Stability** | Std dev < 0.05 | Consistent performance across windows |
+
+---
+
+## Probability Calibration (If Needed)
+
+If the model's probability outputs are poorly calibrated, we apply:
+
+| Method | Description | Best For |
+|--------|-------------|----------|
+| **Platt Scaling** | Logistic regression on model outputs | When calibration curve is sigmoid-shaped |
+| **Isotonic Regression** | Non-parametric calibration | When calibration curve is complex; requires more data |
+
+Calibration is evaluated using:
+- Brier Score
+- Expected Calibration Error (ECE)
+- Reliability Diagrams
 
 ---
 
@@ -313,19 +366,23 @@ Rule of thumb: **10-30 observations per feature**
 | **Evaluation** | AUC-ROC | Measures ranking ability |
 | **Explainability** | SHAP | Game-theoretic, additivity |
 | **Feature set** | 50+ fundamentals + market | Comprehensive coverage |
+| **Performance Expectation** | AUC > 0.55 | Realistic for noisy financial data |
+| **Calibration** | Platt Scaling / Isotonic Regression | As needed |
 
 ---
 
 ## Success Criteria for MVP
 
-| Metric | Threshold |
-|--------|-----------|
-| **AUC-ROC** | > 0.70 |
-| **Precision** | > 0.60 |
-| **Recall** | > 0.55 |
-| **Calibration** | Brier score < 0.25 |
-| **SHAP Stability** | Feature rank correlation > 0.80 |
+| Metric | Threshold | Notes |
+|--------|-----------|-------|
+| **AUC-ROC** | > 0.55 | Realistic for financial data |
+| **Precision** | > 0.55 | Better than random |
+| **Recall** | > 0.50 | Balanced |
+| **Brier Score** | < 0.25 | Well-calibrated |
+| **SHAP Stability** | Correlation > 0.80 | Across windows |
+| **Walk-forward Consistency** | AUC std dev < 0.05 | Across windows |
+| **Feature Drift** | KS p > 0.05 | Monitoring threshold |
 
 ---
 
-**CapitalQuant: Statistical rigor meets investment intelligence.**
+*CapitalQuant: Statistical rigor meets investment intelligence.*

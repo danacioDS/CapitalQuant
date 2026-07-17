@@ -436,4 +436,4 @@ It also creates a **switching cost**: once a firm has integrated CapitalQuant in
 
 ---
 
-**CapitalQuant: The AI research copilot for modern investment teams.**
+*CapitalQuant: The AI research copilot for modern investment teams.*
